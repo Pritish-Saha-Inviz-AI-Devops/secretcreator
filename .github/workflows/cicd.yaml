@@ -34,3 +34,39 @@ jobs:
             --docker-username=_json_key \
             --docker-password="$(cat temp.json)" -n dev-search
 
+name: Vertex Ai  Automation
+#
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+          - info
+          - warning
+          - debug
+jobs:
+  automate-deployment-on-Vertex-AI :
+    runs-on : ubuntu-latest
+    env:
+      SERVICE_ACCOUNT_KEY1: ${{ secrets.KEY1}}
+      SERVICE_ACCOUNT_KEY2: $ {{ secrets.KEY2 }}
+    steps :
+      - uses: actions/checkout@v2
+      - name: test
+        run: |
+	  touch temp.json
+	  echo $SERVICE_ACCOUNT_KEY1 > temp.json
+          echo $SERVICE_ACCOUNT_KEY2 > clust.json
+          sudo snap install google-cloud-cli --classic
+          gcloud auth activate-service-account tf-owner@search-tf-test.iam.gserviceaccount.com --key-file=clust.json --project=search-tf-test
+	  gcloud config set account tf-owner@search-tf-test.iam.gserviceaccount.com
+          sudo snap install kubectl --classic
+	  gcloud container clusters get-credentials saas-gke-cluster1 --region asia-south1 --project search-tf-test
+          kubectl create secret docker-registry staging-secrets \
+	    --docker-server=https://asia-docker.pkg.dev \
+          #chmod +x ./script.sh
+          #bash ./script.sh
